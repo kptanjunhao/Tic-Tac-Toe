@@ -16,6 +16,11 @@ enum LineType: Int {
 }
 
 class Line: UIView {
+    /**
+    *   初始化线条视图
+    *   screenFrame 屏幕大小
+    *   lineType 线条类型
+    */
     init(screenFrame: CGRect,lineType:LineType) {
         var frame:CGRect!
         let playAreaLength = screenFrame.width - 40
@@ -53,21 +58,21 @@ class Line: UIView {
 class GameViewController: UIViewController {
     
     var screen = UIScreen.mainScreen().bounds
-    var isCircle:Bool = false
-    var posHasView = [Int:Bool]()
-    var posIsCircle = [Int:Bool]()
-    var gameOverStatu = false
-    var playerWillNotWin = false
+    var isCircle:Bool = false//当前下的子的形状是否为圆圈
+    var posHasView = [Int:Bool]()//纪录点是否被占领的词典数组
+    var posIsCircle = [Int:Bool]()//纪录点是否为圆圈的词典数组
+    var gameOverStatu = false//游戏结束的标志
+    var playerWillNotWin = false//机器人的难度是否为王者级别
     
-    var robotMode = false
-    var robotshape = "circle"
-    var robotFirst = true
-    var robotNext:Int?
-    var robotPos = [Int]()
+    var robotMode = false//是否为单人模式
+    var robotshape = "circle"//机器人的棋子形状
+    var robotFirst = true//机器人是否下它的第一个棋子
+    var robotNext:Int?//机器人是否有获胜可能的下一步棋子
+    var robotPos = [Int]()//纪录所有机器人下过的棋子位置
     
     
-    var circlePos = [Int]()
-    var crossPos = [Int]()
+    var circlePos = [Int]()//纪录所有圆圈的位置
+    var crossPos = [Int]()//纪录所有叉叉的位置
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,7 +83,7 @@ class GameViewController: UIViewController {
         
         // Do any additional setup after loading the view, typically from a nib.
     }
-    
+    ///重置游戏
     func resetGame(){
         for view in self.view.subviews{
             if view.tag == 9{
@@ -101,13 +106,13 @@ class GameViewController: UIViewController {
         crossPos = [Int]()
         gameInit()
     }
-    
+    //当视图完全出现后，弹出提示框
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         gameInit()
         
     }
-    
+    //弹出提示框，让玩家选择游戏类型
     func gameInit(){
         let offensiveAlert = UIAlertController(title: "提示", message: "谁先手", preferredStyle: UIAlertControllerStyle.Alert)
         let robotStart = UIAlertAction(title: "机器先手", style: UIAlertActionStyle.Default) { (robotStart) in
@@ -139,7 +144,7 @@ class GameViewController: UIViewController {
         offensiveAlert.addAction(playerStart)
         if robotMode{self.presentViewController(offensiveAlert, animated: true, completion: nil)}
     }
-    
+    //向视图中添加背景图以及线条
     func addBoard(){
         let boardLength = screen.width - 20
         let backgroundView = UIImageView(frame: CGRectMake(10,
@@ -157,7 +162,11 @@ class GameViewController: UIViewController {
         }
         
     }
-    
+    /**
+     *  在指定位置生成一个圆圈视图
+     *  position    Int类型的位置，从0-8
+     *
+     */
     func circle(position:Int){
         let x: CGFloat = 24 + CGFloat(position%3) * (screen.width - 40)/3
         let y: CGFloat = (screen.height/2 - (screen.width - 40)/2) + 4 + CGFloat(position/3) * (screen.width - 40)/3
@@ -174,7 +183,11 @@ class GameViewController: UIViewController {
         }
         self.view.addSubview(view)
     }
-    
+    /**
+     *  在指定位置生成一个叉叉视图
+     *  position    Int类型的位置，从0-8
+     *
+     */
     func cross(position:Int){
         let x: CGFloat = 24 + CGFloat(position%3) * (screen.width - 40)/3
         let y: CGFloat = (screen.height/2 - (screen.width - 40)/2) + 4 + CGFloat(position/3) * (screen.width - 40)/3
@@ -197,13 +210,17 @@ class GameViewController: UIViewController {
         }
         self.view.addSubview(view)
     }
-    
+    /**
+     *  根据给定坐标计算出当前位置
+     *  location    屏幕坐标
+     *  return  返回Int类型的position位置
+     */
     func calcPostion(location:CGPoint) -> Int{
         let x = Int((location.x-20)/((screen.width - 40)/3))
         let y = Int((location.y-(screen.height/2-(screen.width - 40)/2))/((screen.width - 40)/3))
         return (x+y*3 >= 0 && x+y*3 <= 8) && !posHasView[x+y*3]! ? x+y*3 : -1
     }
-    
+    //当用户点击屏幕提起手指时的事件
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         var location:CGPoint!
         for touch in touches{
@@ -217,28 +234,24 @@ class GameViewController: UIViewController {
         }
     }
     
-    
+    ///一个储存已经检测过的位置的数组
     var preventDetectedPos = [Int]()
+    ///添加一个机器人棋子
     func addRobotPos(){
+        //如果这是机器人的第一枚棋子
         if robotFirst{
             robotFirst = false
+            //最优胜率为从中间位置，也就是4开始
             if !posHasView[4]!{
                 addPos(4)
                 robotPos.append(4)
-            }else{
-                while true{
-                    let randomPos = Int(arc4random()%9)
-                    if !posHasView[randomPos]!{
-                        addPos(randomPos)
-                        robotPos.append(randomPos)
-                        break
-                    }
-                }
+            }else{//如果4被玩家占领了，则随机生成一个没有被占领位置的棋子
+                makeRandomRobotPos()
             }
-        }else{
-            if playerWillNotWin{
-                    let playArray = robotshape == "cross" ? circlePos : crossPos
-                    for i in 0..<playArray.count{
+        }else{//如果这个不是机器人的第一枚棋子
+            if playerWillNotWin{//检测当前难度
+                    let playArray = robotshape == "cross" ? circlePos : crossPos//判断玩家的棋子形状，然后找到所有玩家的棋子
+                    for i in 0..<playArray.count{//循环遍历判断玩家有没有将要胜利的趋势，如果有则阻止玩家胜利
                         for j in i..<playArray.count{
                             let iPosArry = self.possibilityArray(playArray[i])
                             for pos in iPosArry {
@@ -283,7 +296,9 @@ class GameViewController: UIViewController {
                         }
                     }
             }
-
+            ///在机器人下棋子的时候，如果有胜利的趋势，则会将下一步棋添加至robotNext
+            ///如果没有胜利的趋势，则根据上一步，生成一个有可能会胜利的位置的棋子
+            ///如果没有这样的条件，就随机生成一个
             if robotNext == nil{
                 
                 let array = self.possibilityArray(robotPos.last!)
@@ -325,7 +340,9 @@ class GameViewController: UIViewController {
             
         }
     }
-    
+    /**
+     *  生成一个随机位置的机器人棋子
+     */
     func makeRandomRobotPos(){
         while true{
             let randomPos = Int(arc4random()%9)
@@ -337,6 +354,10 @@ class GameViewController: UIViewController {
         }
     }
     
+    /**
+     *  根据当前位置向屏幕中添加棋子
+     *  position    Int类型的位置，0-8
+     */
     func addPos(position:Int){
         if isCircle{
             circle(position)
@@ -352,6 +373,7 @@ class GameViewController: UIViewController {
         detectGameStatu()
     }
     
+    ///检测游戏状态，包括是否结束，是否有人获胜。
     func detectGameStatu(){
         var shape = ""
         for pos in posHasView.keys{
@@ -388,7 +410,12 @@ class GameViewController: UIViewController {
     }
     
     
-    
+    /**
+     *  根据指定位置，返回可能获胜的数组
+     *  lastpos 当前检测的位置
+     *  return [Int] 返回一个数组，数组包括当前位置所有可能获胜的位置，以2个为一组
+     *  例如当传入1时，会返回[0,2,4,7],其中[0,2]是一组可能胜利,[4,7]也是一组可能的胜利
+     */
     func possibilityArray(lastpos:Int) -> [Int]{
         switch lastpos {
         case 0:

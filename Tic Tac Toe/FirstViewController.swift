@@ -27,7 +27,7 @@ class FirstViewController: UIViewController {
         let singlePlayerBtn = UIButton(type: UIButtonType.System)
         singlePlayerBtn.tag = 102
         singlePlayerBtn.addTarget(self, action: #selector(self.start(_:)), forControlEvents: UIControlEvents.TouchUpInside)
-        singlePlayerBtn.frame = CGRectMake(screen.width/2 - 50, screen.height/2 - 15, 100, 30)
+        singlePlayerBtn.frame = CGRectMake(screen.width/2 - 50, screen.height/2 + 45, 100, 30)
         singlePlayerBtn.layer.cornerRadius = 8
         singlePlayerBtn.setTitle("单人游戏", forState: UIControlState.Normal)
         singlePlayerBtn.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
