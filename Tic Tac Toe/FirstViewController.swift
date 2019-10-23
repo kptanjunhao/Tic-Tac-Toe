@@ -12,33 +12,33 @@ class FirstViewController: UIViewController {
     
     var gamemode = 0
     
-    var screen = UIScreen.mainScreen().bounds
+    var screen = UIScreen.main.bounds
     override func viewDidLoad() {
         super.viewDidLoad()
-        let mutiplePlayerBtn = UIButton(type: UIButtonType.System)
+        let mutiplePlayerBtn = UIButton(type: .system)
         mutiplePlayerBtn.tag = 101
-        mutiplePlayerBtn.addTarget(self, action: #selector(self.start(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+        mutiplePlayerBtn.addTarget(self, action: #selector(self.start(_:)), for: .touchUpInside)
         mutiplePlayerBtn.frame = CGRectMake(screen.width/2 - 50, screen.height/2 - 45, 100, 30)
         mutiplePlayerBtn.layer.cornerRadius = 8
-        mutiplePlayerBtn.setTitle("多人游戏", forState: UIControlState.Normal)
-        mutiplePlayerBtn.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        mutiplePlayerBtn.setTitle("多人游戏", for: .normal)
+        mutiplePlayerBtn.setTitleColor(UIColor.white, for: .normal)
         mutiplePlayerBtn.backgroundColor = UIColor(red:0.05, green:0.60, blue:0.99, alpha:1.00)
         self.view.addSubview(mutiplePlayerBtn)
-        let singlePlayerBtn = UIButton(type: UIButtonType.System)
+        let singlePlayerBtn = UIButton(type: .system)
         singlePlayerBtn.tag = 102
-        singlePlayerBtn.addTarget(self, action: #selector(self.start(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+        singlePlayerBtn.addTarget(self, action: #selector(self.start(_:)), for: .touchUpInside)
         singlePlayerBtn.frame = CGRectMake(screen.width/2 - 50, screen.height/2 + 45, 100, 30)
         singlePlayerBtn.layer.cornerRadius = 8
-        singlePlayerBtn.setTitle("单人游戏", forState: UIControlState.Normal)
-        singlePlayerBtn.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        singlePlayerBtn.setTitle("单人游戏", for: .normal)
+        singlePlayerBtn.setTitleColor(UIColor.white, for: .normal)
         singlePlayerBtn.backgroundColor = UIColor(red:0.05, green:0.60, blue:0.99, alpha:1.00)
         self.view.addSubview(singlePlayerBtn)
         // Do any additional setup after loading the view.
     }
     
-    func start(sender:UIButton) {
+    @objc func start(_ sender:UIButton) {
         gamemode = sender.tag
-        self.performSegueWithIdentifier("start", sender: self)
+        self.performSegue(withIdentifier: "start", sender: self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -51,12 +51,10 @@ class FirstViewController: UIViewController {
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "start"{
             if gamemode == 102{
-                let desVC = segue.destinationViewController as! GameViewController
+                let desVC = segue.destination as! GameViewController
                 desVC.robotMode = true
             }
         }

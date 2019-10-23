@@ -15,6 +15,14 @@ enum LineType: Int {
     case horizontal2 = 3
 }
 
+func CGRectMake(_ x: CGFloat,_ y: CGFloat,_ w: CGFloat,_ h: CGFloat) -> CGRect{
+    return CGRect(x: x, y: y, width: w, height: h)
+}
+
+func CGSizeMake(_ w: CGFloat,_ h: CGFloat) -> CGSize{
+    return CGSize(width: w, height: h)
+}
+
 class Line: UIView {
     /**
     *   初始化线条视图
@@ -47,7 +55,7 @@ class Line: UIView {
                                2)
         }
         super.init(frame: frame)
-        self.backgroundColor = UIColor.whiteColor()
+        self.backgroundColor = UIColor.white
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -57,7 +65,7 @@ class Line: UIView {
 
 class GameViewController: UIViewController {
     
-    var screen = UIScreen.mainScreen().bounds
+    var screen = UIScreen.main.bounds
     var isCircle:Bool = false//当前下的子的形状是否为圆圈
     var posHasView = [Int:Bool]()//纪录点是否被占领的词典数组
     var posIsCircle = [Int:Bool]()//纪录点是否为圆圈的词典数组
@@ -76,7 +84,7 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.grayColor()
+        self.view.backgroundColor = UIColor.gray
         self.addBoard()
         
         
@@ -107,42 +115,42 @@ class GameViewController: UIViewController {
         gameInit()
     }
     //当视图完全出现后，弹出提示框
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         gameInit()
         
     }
     //弹出提示框，让玩家选择游戏类型
     func gameInit(){
-        let offensiveAlert = UIAlertController(title: "提示", message: "谁先手", preferredStyle: UIAlertControllerStyle.Alert)
-        let robotStart = UIAlertAction(title: "机器先手", style: UIAlertActionStyle.Default) { (robotStart) in
+        let offensiveAlert = UIAlertController(title: "提示", message: "谁先手", preferredStyle: UIAlertController.Style.alert)
+        let robotStart = UIAlertAction(title: "机器先手", style: UIAlertAction.Style.default) { (robotStart) in
             self.addRobotPos()
             self.robotshape = "cross"
-            let playerWillNotWinAlert = UIAlertController(title: "选择模式", message: "", preferredStyle: UIAlertControllerStyle.Alert)
-            playerWillNotWinAlert.addAction(UIAlertAction(title: "你不可能赢模式", style: UIAlertActionStyle.Destructive, handler: { (alert) in
+            let playerWillNotWinAlert = UIAlertController(title: "选择模式", message: "", preferredStyle: UIAlertController.Style.alert)
+            playerWillNotWinAlert.addAction(UIAlertAction(title: "你不可能赢模式", style: UIAlertAction.Style.destructive, handler: { (alert) in
                 self.playerWillNotWin = true
             }))
-            playerWillNotWinAlert.addAction(UIAlertAction(title: "呆瓜电脑模式", style: UIAlertActionStyle.Default, handler: { (action) in
+            playerWillNotWinAlert.addAction(UIAlertAction(title: "呆瓜电脑模式", style: UIAlertAction.Style.default, handler: { (action) in
                 self.playerWillNotWin = false
             }))
-            self.presentViewController(playerWillNotWinAlert, animated: true, completion: nil)
+            self.present(playerWillNotWinAlert, animated: true, completion: nil)
             
         }
-        let playerStart = UIAlertAction(title: "玩家先手", style: UIAlertActionStyle.Default, handler: {(robotStart) in
+        let playerStart = UIAlertAction(title: "玩家先手", style: UIAlertAction.Style.default, handler: {(robotStart) in
             self.robotshape = "circle"
-            let playerWillNotWinAlert = UIAlertController(title: "选择模式", message: "", preferredStyle: UIAlertControllerStyle.Alert)
-            playerWillNotWinAlert.addAction(UIAlertAction(title: "聪明电脑模式", style: UIAlertActionStyle.Destructive, handler: { (alert) in
+            let playerWillNotWinAlert = UIAlertController(title: "选择模式", message: "", preferredStyle: UIAlertController.Style.alert)
+            playerWillNotWinAlert.addAction(UIAlertAction(title: "聪明电脑模式", style: UIAlertAction.Style.destructive, handler: { (alert) in
                 self.playerWillNotWin = true
             }))
-            playerWillNotWinAlert.addAction(UIAlertAction(title: "呆瓜电脑模式", style: UIAlertActionStyle.Default, handler: { (action) in
+            playerWillNotWinAlert.addAction(UIAlertAction(title: "呆瓜电脑模式", style: UIAlertAction.Style.default, handler: { (action) in
                 self.playerWillNotWin = false
             }))
-            self.presentViewController(playerWillNotWinAlert, animated: true, completion: nil)
+            self.present(playerWillNotWinAlert, animated: true, completion: nil)
 
         })
         offensiveAlert.addAction(robotStart)
         offensiveAlert.addAction(playerStart)
-        if robotMode{self.presentViewController(offensiveAlert, animated: true, completion: nil)}
+        if robotMode{self.present(offensiveAlert, animated: true, completion: nil)}
     }
     //向视图中添加背景图以及线条
     func addBoard(){
@@ -167,15 +175,15 @@ class GameViewController: UIViewController {
      *  position    Int类型的位置，从0-8
      *
      */
-    func circle(position:Int){
+    func circle(_ position:Int){
         let x: CGFloat = 24 + CGFloat(position%3) * (screen.width - 40)/3
         let y: CGFloat = (screen.height/2 - (screen.width - 40)/2) + 4 + CGFloat(position/3) * (screen.width - 40)/3
         let length = (screen.width - 40)/3 - 10
         let view = UIView(frame: CGRectMake(x + length/2,y + length/2,0,0))
         view.tag = 9
-        view.layer.borderColor = UIColor.whiteColor().CGColor
+        view.layer.borderColor = UIColor.white.cgColor
         view.layer.borderWidth = 10
-        UIView.animateWithDuration(0.4, animations: {
+        UIView.animate(withDuration: 0.4, animations: {
             view.frame = CGRectMake(x, y, length, length)
             view.layer.cornerRadius = length/2
             }) { (complete) in
@@ -188,23 +196,23 @@ class GameViewController: UIViewController {
      *  position    Int类型的位置，从0-8
      *
      */
-    func cross(position:Int){
+    func cross(_ position:Int){
         let x: CGFloat = 24 + CGFloat(position%3) * (screen.width - 40)/3
         let y: CGFloat = (screen.height/2 - (screen.width - 40)/2) + 4 + CGFloat(position/3) * (screen.width - 40)/3
         let length = (screen.width - 40)/3 - 10
         let view = UIView(frame: CGRectMake(x,y,length,length))
         view.tag = 9
-        view.transform = CGAffineTransformMakeRotation(CGFloat(M_PI_4))
+        view.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 4)
         let line1 = UIView(frame: CGRectMake(length/2-5,0,10,0))
-        line1.backgroundColor = UIColor.whiteColor()
+        line1.backgroundColor = UIColor.white
         view.addSubview(line1)
         let line2 = UIView(frame: CGRectMake(0,length/2-5,0,10))
-        line2.backgroundColor = UIColor.whiteColor()
+        line2.backgroundColor = UIColor.white
         view.addSubview(line2)
-        UIView.animateWithDuration(0.2, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             line1.frame.size = CGSizeMake(10, length)
             }) { (complete) in
-                UIView.animateWithDuration(0.2, animations: {
+                UIView.animate(withDuration: 0.2, animations: {
                     line2.frame.size = CGSizeMake(length, 10)
                 })
         }
@@ -215,16 +223,16 @@ class GameViewController: UIViewController {
      *  location    屏幕坐标
      *  return  返回Int类型的position位置
      */
-    func calcPostion(location:CGPoint) -> Int{
+    func calcPostion(_ location:CGPoint) -> Int{
         let x = Int((location.x-20)/((screen.width - 40)/3))
         let y = Int((location.y-(screen.height/2-(screen.width - 40)/2))/((screen.width - 40)/3))
         return (x+y*3 >= 0 && x+y*3 <= 8) && !posHasView[x+y*3]! ? x+y*3 : -1
     }
     //当用户点击屏幕提起手指时的事件
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         var location:CGPoint!
         for touch in touches{
-            location = touch.locationInView(self.view)
+            location = touch.location(in: self.view)
         }
         let position = calcPostion(location)
         if position == -1{return}
@@ -257,7 +265,8 @@ class GameViewController: UIViewController {
                             for pos in iPosArry {
                                 if playArray[j] == pos{
                                     var preventPos = 0
-                                    let index = iPosArry.indexOf(pos)!.advancedBy(0)
+//                                    let index = iPosArry.indexOf(pos).advancedBy(0)
+                                    let index = iPosArry.firstIndex(of: pos)!
                                     if index%2 == 0{
                                         preventPos = iPosArry[index + 1]
                                         var detectedStatu = true
@@ -358,7 +367,7 @@ class GameViewController: UIViewController {
      *  根据当前位置向屏幕中添加棋子
      *  position    Int类型的位置，0-8
      */
-    func addPos(position:Int){
+    func addPos(_ position:Int){
         if isCircle{
             circle(position)
             circlePos.append(position)
@@ -395,16 +404,16 @@ class GameViewController: UIViewController {
         if circlePos.count + crossPos.count == 9 || gameOverStatu{//游戏结束
             var message = "游戏结束，平局"
             if gameOverStatu{message = "游戏结束 \(shape) 赢"}
-            let finishAlert = UIAlertController(title: "提示", message: message, preferredStyle: UIAlertControllerStyle.Alert)
-            finishAlert.addAction(UIAlertAction(title: "查看棋局", style: UIAlertActionStyle.Default, handler: nil))
-            finishAlert.addAction(UIAlertAction(title: "返回主界面", style: UIAlertActionStyle.Default, handler: {
+            let finishAlert = UIAlertController(title: "提示", message: message, preferredStyle: UIAlertController.Style.alert)
+            finishAlert.addAction(UIAlertAction(title: "查看棋局", style: UIAlertAction.Style.default, handler: nil))
+            finishAlert.addAction(UIAlertAction(title: "返回主界面", style: UIAlertAction.Style.default, handler: {
                 (action) in
-                self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+                self.presentingViewController?.dismiss(animated: true, completion: nil)
             }))
-            finishAlert.addAction(UIAlertAction(title: "重置游戏", style: UIAlertActionStyle.Destructive, handler: { (action) in
+            finishAlert.addAction(UIAlertAction(title: "重置游戏", style: UIAlertAction.Style.destructive, handler: { (action) in
                 self.resetGame()
             }))
-            self.presentViewController(finishAlert, animated: true, completion: nil)
+            self.present(finishAlert, animated: true, completion: nil)
         }
         
     }
@@ -416,7 +425,7 @@ class GameViewController: UIViewController {
      *  return [Int] 返回一个数组，数组包括当前位置所有可能获胜的位置，以2个为一组
      *  例如当传入1时，会返回[0,2,4,7],其中[0,2]是一组可能胜利,[4,7]也是一组可能的胜利
      */
-    func possibilityArray(lastpos:Int) -> [Int]{
+    func possibilityArray(_ lastpos:Int) -> [Int]{
         switch lastpos {
         case 0:
             return [1,2,3,6,4,8]
